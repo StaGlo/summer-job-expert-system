@@ -4,3 +4,6 @@
 # Ignore .classpath and .project
 .classpath
 .project
+
+# Ignore logs
+*.log
