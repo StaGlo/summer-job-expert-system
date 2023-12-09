@@ -1,0 +1,81 @@
+package rules;
+
+import org.kie.api.runtime.KieRuntime;
+import javax.swing.JOptionPane;
+import javax.swing.JFrame;
+
+import main.Questions; // Ensure this is the correct path to your enum
+
+global JFrame frame;
+
+declare GUI
+    question : Questions
+    title : String
+    optionType : int
+    messageType : int
+    options : Object[]
+end;
+
+declare UserResponse
+    question : Questions
+    answer : String
+end;
+
+function void make_decision(JFrame frame, KieRuntime krt, GUI gui) {
+    int n = JOptionPane.showOptionDialog(frame, 
+                                         gui.getQuestion().getFullQuestion(),
+                                         gui.getTitle(), 
+                                         gui.getOptionType(),
+                                         gui.getMessageType(),
+                                         null,
+                                         gui.getOptions(), 
+                                         gui.getOptions()[0]);
+    
+    // Capture the user's response and insert a new UserResponse fact into working memory
+    UserResponse response = new UserResponse();
+    response.setQuestion(gui.getQuestion());
+    response.setAnswer(gui.getOptions()[n].toString());
+    krt.insert(response);
+    
+    // Print the question and the user's response
+    System.out.println(gui.getQuestion() + ": " + gui.getOptions()[n].toString());
+}
+
+function GUI gui_default (Questions question){
+	
+	GUI gui = new GUI();
+    gui.setTitle("Please answer"); // Sets the title of the JOptionPane
+    gui.setOptionType(JOptionPane.YES_NO_OPTION); // Sets the option type for the JOptionPane
+    gui.setMessageType(JOptionPane.QUESTION_MESSAGE); // Sets the message type for the JOptionPane
+    gui.setOptions(new Object[] {"no", "yes"}); // Sets the options for the JOptionPane
+    
+    gui.setQuestion(question); // Sets the question for the GUI
+    return gui;
+}
+
+
+
+rule "needMoney"
+when
+then
+    GUI gui = gui_default(Questions.NEED_MONEY); // Create a gui with default parameters and Question passed as argument
+    make_decision(frame, kcontext.getKieRuntime(), gui); // Calls the function to display the JOptionPane and capture the response
+end;
+
+
+rule "haveMoney"
+when
+	UserResponse(question == Questions.NEED_MONEY, answer == "no");
+then
+	GUI gui = gui_default(Questions.HAVE_MONEY);
+    make_decision(frame, kcontext.getKieRuntime(), gui);
+end;
+
+
+rule "useBrain"
+when
+	UserResponse(question == Questions.NEED_MONEY, answer == "yes");
+then	
+	GUI gui = gui_default(Questions.USE_BRAIN);
+    make_decision(frame, kcontext.getKieRuntime(), gui);
+end;

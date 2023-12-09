@@ -1,2 +1,6 @@
 # Ignore target directory
 /target/
+
+# Ignore .classpath and .project
+.classpath
+.project
