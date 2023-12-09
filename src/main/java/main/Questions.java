@@ -3,8 +3,9 @@ package main;
 public enum Questions {
 	NEED_MONEY("Do you need to make money?"),
     HAVE_MONEY("Do you have a bit of money to spend?"),
-    STAY_LOCAL("Do you want to stay in Hamilton?"),
+    STAY_HAMILTON("Do you want to stay in Hamilton?"),
     USE_BRAIN("Do you want to use your brain?"),
+    WORK_OFFICE("Do you want to work in an office/lab?"),
     ARTISTIC_SKILL("Do you have artistic talent?"),
     OUTDOORSY("Do you want to work outside?"),
     HARD_LABOR("Are you okay with hard physical labor?"),

@@ -57,6 +57,7 @@ function GUI gui_default (Questions question){
 
 rule "needMoney"
 when
+	// Initial rule, no previous response needed to trigger
 then
     GUI gui = gui_default(Questions.NEED_MONEY); // Create a gui with default parameters and Question passed as argument
     make_decision(frame, kcontext.getKieRuntime(), gui); // Calls the function to display the JOptionPane and capture the response
@@ -77,5 +78,41 @@ when
 	UserResponse(question == Questions.NEED_MONEY, answer == "yes");
 then	
 	GUI gui = gui_default(Questions.USE_BRAIN);
+    make_decision(frame, kcontext.getKieRuntime(), gui);
+end;
+
+
+rule "workOffice"
+when
+	UserResponse(question == Questions.USE_BRAIN, answer == "yes");
+then	
+	GUI gui = gui_default(Questions.WORK_OFFICE);
+    make_decision(frame, kcontext.getKieRuntime(), gui);
+end;
+
+
+rule "outdoorsy"
+when
+	UserResponse(question == Questions.USE_BRAIN, answer == "no");
+then	
+	GUI gui = gui_default(Questions.OUTDOORSY);
+    make_decision(frame, kcontext.getKieRuntime(), gui);
+end;
+
+
+rule "artisticSkill"
+when
+	UserResponse(question == Questions.HAVE_MONEY, answer == "no");
+then	
+	GUI gui = gui_default(Questions.ARTISTIC_SKILL);
+    make_decision(frame, kcontext.getKieRuntime(), gui);
+end;
+
+
+rule "stayHamilton"
+when
+	UserResponse(question == Questions.HAVE_MONEY, answer == "yes");
+then	
+	GUI gui = gui_default(Questions.STAY_HAMILTON);
     make_decision(frame, kcontext.getKieRuntime(), gui);
 end;
