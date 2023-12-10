@@ -4,12 +4,14 @@ import org.kie.api.runtime.KieRuntime;
 import javax.swing.JOptionPane;
 import javax.swing.JFrame;
 
-import main.Questions; // Ensure this is the correct path to your enum
+import main.Questions;
+import main.Jobs;
 
 global JFrame frame;
 
 declare GUI
     question : Questions
+    job : Jobs
     title : String
     optionType : int
     messageType : int
@@ -21,7 +23,7 @@ declare UserResponse
     answer : String
 end;
 
-function void make_decision(JFrame frame, KieRuntime krt, GUI gui) {
+function void ask_question(JFrame frame, KieRuntime krt, GUI gui) {
     int n = JOptionPane.showOptionDialog(frame, 
                                          gui.getQuestion().getFullQuestion(),
                                          gui.getTitle(), 
@@ -41,8 +43,18 @@ function void make_decision(JFrame frame, KieRuntime krt, GUI gui) {
     System.out.println(gui.getQuestion() + ": " + gui.getOptions()[n].toString());
 }
 
-function GUI gui_default (Questions question){
-	
+function void show_result(JFrame frame, KieRuntime krt, GUI gui) {
+    JOptionPane.showMessageDialog(frame, 
+    							  gui.getJob().getFullJob(), 
+    							  gui.getTitle(), 
+    							  gui.getMessageType());
+    
+    // Print the job
+    System.out.println("Perfect job for you: " + gui.getJob());
+} 
+
+
+function GUI default_question (Questions question){
 	GUI gui = new GUI();
     gui.setTitle("Please answer"); // Sets the title of the JOptionPane
     gui.setOptionType(JOptionPane.YES_NO_OPTION); // Sets the option type for the JOptionPane
@@ -53,14 +65,22 @@ function GUI gui_default (Questions question){
     return gui;
 }
 
+function GUI default_result (Jobs job){
+    GUI gui = new GUI();
+    gui.setTitle("Perfect job for your summer:"); // Sets the title of the JOptionPane
+    gui.setMessageType(JOptionPane.INFORMATION_MESSAGE); // Sets the message type for the JOptionPane
+
+    gui.setJob(Jobs.INTERN);
+    return gui;
+}
 
 
 rule "needMoney"
 when
 	// Initial rule, no previous response needed to trigger
 then
-    GUI gui = gui_default(Questions.NEED_MONEY); // Create a gui with default parameters and Question passed as argument
-    make_decision(frame, kcontext.getKieRuntime(), gui); // Calls the function to display the JOptionPane and capture the response
+    GUI gui = default_question(Questions.NEED_MONEY); // Create a gui with default parameters and Question passed as argument
+    ask_question(frame, kcontext.getKieRuntime(), gui); // Calls the function to display the JOptionPane and capture the response
 end;
 
 
@@ -68,8 +88,8 @@ rule "haveMoney"
 when
 	UserResponse(question == Questions.NEED_MONEY, answer == "no");
 then
-	GUI gui = gui_default(Questions.HAVE_MONEY);
-    make_decision(frame, kcontext.getKieRuntime(), gui);
+	GUI gui = default_question(Questions.HAVE_MONEY);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
 end;
 
 
@@ -77,8 +97,8 @@ rule "useBrain"
 when
 	UserResponse(question == Questions.NEED_MONEY, answer == "yes");
 then	
-	GUI gui = gui_default(Questions.USE_BRAIN);
-    make_decision(frame, kcontext.getKieRuntime(), gui);
+	GUI gui = default_question(Questions.USE_BRAIN);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
 end;
 
 
@@ -86,8 +106,8 @@ rule "workOffice"
 when
 	UserResponse(question == Questions.USE_BRAIN, answer == "yes");
 then	
-	GUI gui = gui_default(Questions.WORK_OFFICE);
-    make_decision(frame, kcontext.getKieRuntime(), gui);
+	GUI gui = default_question(Questions.WORK_OFFICE);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
 end;
 
 
@@ -95,8 +115,8 @@ rule "outdoorsy"
 when
 	UserResponse(question == Questions.USE_BRAIN, answer == "no");
 then	
-	GUI gui = gui_default(Questions.OUTDOORSY);
-    make_decision(frame, kcontext.getKieRuntime(), gui);
+	GUI gui = default_question(Questions.OUTDOORSY);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
 end;
 
 
@@ -104,8 +124,8 @@ rule "artisticSkill"
 when
 	UserResponse(question == Questions.HAVE_MONEY, answer == "no");
 then	
-	GUI gui = gui_default(Questions.ARTISTIC_SKILL);
-    make_decision(frame, kcontext.getKieRuntime(), gui);
+	GUI gui = default_question(Questions.ARTISTIC_SKILL);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
 end;
 
 
@@ -113,6 +133,23 @@ rule "stayHamilton"
 when
 	UserResponse(question == Questions.HAVE_MONEY, answer == "yes");
 then	
-	GUI gui = gui_default(Questions.STAY_HAMILTON);
-    make_decision(frame, kcontext.getKieRuntime(), gui);
+	GUI gui = default_question(Questions.STAY_HAMILTON);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
 end;
+
+
+rule "intern"
+when
+	UserResponse(question == Questions.ARTISTIC_SKILL, answer == "no");
+then
+    GUI gui = default_result(Jobs.INTERN);
+	show_result(frame, kcontext.getKieRuntime(), gui);
+end;
+
+rule "musician"
+when
+	UserResponse(question == Questions.ARTISTIC_SKILL, answer == "yes");
+then
+    GUI gui = default_result(Jobs.MUSCIAN);
+	show_result(frame, kcontext.getKieRuntime(), gui);
+end; 
