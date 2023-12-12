@@ -75,6 +75,8 @@ function GUI default_result (Jobs job){
 }
 
 
+// rules with questions
+
 rule "needMoney?"
 when
 	// Initial rule, no previous response needed to trigger
@@ -93,7 +95,7 @@ then
 end;
 
 
-rule "useBrain?"
+rule "useBrain_makeMoney?"
 when
 	UserResponse(question == Questions.NEED_MONEY, answer == "yes");
 then	
@@ -102,23 +104,43 @@ then
 end;
 
 
+rule "useBrain_haveMoney?"
+when
+	UserResponse(question == Questions.STAY_HAMILTON, answer == "yes");
+then	
+	GUI gui = default_question(Questions.USE_BRAIN);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
+end;
+
+
+
 rule "workOffice?"
 when
 	UserResponse(question == Questions.USE_BRAIN, answer == "yes");
+	UserResponse(question == Questions.NEED_MONEY, answer == "yes");
 then	
 	GUI gui = default_question(Questions.WORK_OFFICE);
     ask_question(frame, kcontext.getKieRuntime(), gui);
 end;
 
 
-rule "outdoorsy?"
+rule "outdoorsy_useBrain?"
 when
 	UserResponse(question == Questions.USE_BRAIN, answer == "no");
+	UserResponse(question == Questions.NEED_MONEY, answer == "yes");
 then	
 	GUI gui = default_question(Questions.OUTDOORSY);
     ask_question(frame, kcontext.getKieRuntime(), gui);
 end;
 
+
+rule "outdoorsy_ownBoss?"
+when
+	UserResponse(question == Questions.OWN_BOSS, answer == "no")
+then	
+	GUI gui = default_question(Questions.OUTDOORSY);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
+end;
 
 rule "artisticSkill?"
 when
@@ -138,12 +160,189 @@ then
 end;
 
 
+rule "hardLabor?"
+when
+    UserResponse(question == Questions.OUTDOORSY, answer == "yes");
+    UserResponse(question == Questions.USE_BRAIN, answer == "no");
+then
+    GUI gui = default_question(Questions.HARD_LABOR);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
+end;
+
+rule "showerInfrequent?"
+when
+    UserResponse(question == Questions.HARD_LABOR, answer == "yes");
+then
+    GUI gui = default_question(Questions.SHOWER_INFREQUENT);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
+end;
+
+rule "foodWork?"
+when
+    UserResponse(question == Questions.OUTDOORSY, answer == "no");
+    UserResponse(question == Questions.USE_BRAIN, answer == "no");
+then
+    GUI gui = default_question(Questions.FOOD_WORK);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
+end;
+
+rule "animalLover?"
+when
+    UserResponse(question == Questions.SHOWER_INFREQUENT, answer == "no");
+then
+    GUI gui = default_question(Questions.ANIMAL_LOVER);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
+end;
+
+rule "okTravelling?"
+when
+    UserResponse(question == Questions.BOSSY, answer == "no");
+then
+    GUI gui = default_question(Questions.OK_TRAVELLING);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
+end;
+
+rule "fearNeedles?"
+when
+    UserResponse(question == Questions.OK_TRAVELLING, answer == "no");
+then
+    GUI gui = default_question(Questions.FEAR_NEEDLES);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
+end;
+
+rule "camper?"
+when
+    UserResponse(question == Questions.HARD_LABOR, answer == "no");
+then
+    GUI gui = default_question(Questions.CAMPER);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
+end;
+
+rule "workMcMaster?"
+when
+    UserResponse(question == Questions.WORK_OFFICE, answer == "yes");
+then
+    GUI gui = default_question(Questions.WORK_MCMASTER);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
+end;
+
+rule "ownBoss?"
+when
+    UserResponse(question == Questions.WORK_OFFICE, answer == "no");
+then
+    GUI gui = default_question(Questions.OWN_BOSS);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
+end;
+
+rule "goodIT?"
+when
+    UserResponse(question == Questions.WORK_MCMASTER, answer == "no");
+then
+    GUI gui = default_question(Questions.GOOD_IT);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
+end;
+
+rule "programmer?"
+when
+    UserResponse(question == Questions.GOOD_IT, answer == "yes");
+then
+    GUI gui = default_question(Questions.PROGRAMMER);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
+end;
+
+rule "scientist?"
+when
+    UserResponse(question == Questions.WORK_MCMASTER, answer == "yes");
+then
+    GUI gui = default_question(Questions.SCIENTIST);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
+end;
+
+rule "academics?"
+when
+    UserResponse(question == Questions.OWN_BOSS, answer == "yes");
+then
+    GUI gui = default_question(Questions.ACADEMICS);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
+end;
+
+rule "teacher?"
+when
+    UserResponse(question == Questions.ACADEMICS, answer == "yes");
+then
+    GUI gui = default_question(Questions.TEACHER);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
+end;
+
+rule "artist?"
+when
+    UserResponse(question == Questions.ACADEMICS, answer == "no");
+then
+    GUI gui = default_question(Questions.ARTIST);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
+end;
+
+rule "bossy?"
+when
+    UserResponse(question == Questions.FOOD_WORK, answer == "no");
+then
+    GUI gui = default_question(Questions.BOSSY);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
+end;
+
+rule "bulky?"
+when
+    UserResponse(question == Questions.BOSSY, answer == "no");
+then
+    GUI gui = default_question(Questions.BULKY);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
+end;
+
+rule "social?"
+when
+    UserResponse(question == Questions.FOOD_WORK, answer == "yes");
+then
+    GUI gui = default_question(Questions.SOCIAL);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
+end;
+
+rule "okGreasy?"
+when
+    UserResponse(question == Questions.SOCIAL, answer == "no");
+then
+    GUI gui = default_question(Questions.OK_GREASY);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
+end;
+
+rule "likeBurgers?"
+when
+    UserResponse(question == Questions.OK_GREASY, answer == "no");
+then
+    GUI gui = default_question(Questions.LIKE_BURGERS);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
+end;
+
+rule "knowDrinks?"
+when
+    UserResponse(question == Questions.SOCIAL, answer == "yes");
+then
+    GUI gui = default_question(Questions.KNOW_DRINKS);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
+end;
+
+rule "swimmer?"
+when
+    UserResponse(question == Questions.BULKY, answer == "no");
+then
+    GUI gui = default_question(Questions.SWIMMER);
+    ask_question(frame, kcontext.getKieRuntime(), gui);
+end;
 
 
 
 
 
-
+// rules with perfet jobs (results)
 
 rule "intern"
 when
