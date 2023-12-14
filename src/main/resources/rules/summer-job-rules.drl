@@ -292,7 +292,7 @@ end;
 
 rule "bulky?"
 when
-    UserResponse(question == Questions.BOSSY, answer == "no");
+    UserResponse(question == Questions.BOSSY, answer == "yes");
 then
     GUI gui = default_question(Questions.BULKY);
     ask_question(frame, kcontext.getKieRuntime(), gui);
