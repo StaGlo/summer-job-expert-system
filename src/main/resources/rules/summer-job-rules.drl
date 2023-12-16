@@ -4,14 +4,11 @@ import org.kie.api.runtime.KieRuntime;
 import javax.swing.JOptionPane;
 import javax.swing.JFrame;
 
-import main.Questions;
-import main.Jobs;
-
 global JFrame frame;
 
 declare GUI
-    question : Questions
-    job : Jobs
+    askedQuestion : Question
+    resultJob : Job
     title : String
     optionType : int
     messageType : int
@@ -25,7 +22,7 @@ end;
 
 function void ask_question(JFrame frame, KieRuntime krt, GUI gui) {
     int n = JOptionPane.showOptionDialog(frame, 
-                                         gui.getQuestion().getFullQuestion(),
+                                         gui.getAskedQuestion().getQuestion().getFullName(),
                                          gui.getTitle(), 
                                          gui.getOptionType(),
                                          gui.getMessageType(),
@@ -35,42 +32,48 @@ function void ask_question(JFrame frame, KieRuntime krt, GUI gui) {
     
     // Capture the user's response and insert a new UserResponse fact into working memory
     UserResponse response = new UserResponse();
-    response.setQuestion(gui.getQuestion());
+    response.setQuestion(gui.getAskedQuestion().getQuestion());
     response.setAnswer(gui.getOptions()[n].toString());
     krt.insert(response);
     
     // Print the question and the user's response
-    System.out.println(gui.getQuestion() + ": " + gui.getOptions()[n].toString());
+    System.out.println(gui.getAskedQuestion().getQuestion().getFullName() + ": " + gui.getOptions()[n].toString());
 }
 
 function void show_result(JFrame frame, KieRuntime krt, GUI gui) {
     JOptionPane.showMessageDialog(frame, 
-    							  gui.getJob().getFullJob(), 
+    							  gui.getResultJob().getJob().getFullName(), 
     							  gui.getTitle(), 
     							  gui.getMessageType());
     
     // Print the job
-    System.out.println("Perfect job for you: " + gui.getJob());
+    System.out.println("Perfect job for you: " + gui.getResultJob().getJob().getFullName());
 } 
 
 
-function GUI default_question (Questions question){
+function GUI default_question (Questions arg){
 	GUI gui = new GUI();
     gui.setTitle("Please answer"); // Sets the title of the JOptionPane
     gui.setOptionType(JOptionPane.YES_NO_OPTION); // Sets the option type for the JOptionPane
     gui.setMessageType(JOptionPane.QUESTION_MESSAGE); // Sets the message type for the JOptionPane
     gui.setOptions(new Object[] {"no", "yes"}); // Sets the options for the JOptionPane
     
-    gui.setQuestion(question); // Sets the question for the GUI
+    Question question = new Question();	// Prepare Question object
+    question.setQuestion(arg);
+    
+    gui.setAskedQuestion(question); // Sets the question for the GUI
     return gui;
 }
 
-function GUI default_result (Jobs job){
+function GUI default_result (Jobs arg){
     GUI gui = new GUI();
-    gui.setTitle("Perfect job for your summer:"); // Sets the title of the JOptionPane
-    gui.setMessageType(JOptionPane.INFORMATION_MESSAGE); // Sets the message type for the JOptionPane
+    gui.setTitle("Perfect job for your summer:");
+    gui.setMessageType(JOptionPane.INFORMATION_MESSAGE);
 
-    gui.setJob(job);
+	Job job = new Job();
+	job.setJob(arg);
+	
+    gui.setResultJob(job);
     return gui;
 }
 
