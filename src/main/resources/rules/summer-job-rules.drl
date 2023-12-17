@@ -20,6 +20,7 @@ declare UserResponse
     answer : String
 end;
 
+// Function to display a question based on given gui object and capture response
 function void ask_question(JFrame frame, KieRuntime krt, GUI gui) {
     int n = JOptionPane.showOptionDialog(frame, 
                                          gui.getAskedQuestion().getQuestion().getFullName(),
@@ -50,7 +51,7 @@ function void show_result(JFrame frame, KieRuntime krt, GUI gui) {
     System.out.println("Perfect job for you: " + gui.getResultJob().getJob().getFullName());
 } 
 
-
+// Function to prepare default gui with provided question (user can modify the gui inside the rules, before asking question)
 function GUI default_question (Questions arg){
 	GUI gui = new GUI();
     gui.setTitle("Please answer"); // Sets the title of the JOptionPane
