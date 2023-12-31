@@ -90,29 +90,51 @@ then
 end;
 
 
+// TA REGULA NIE UZYWA DOMYSLNEGO ZAPYTANIA W OGOLE
+// ZMODYFIKOWANO SCHEMAT DECYZYJNY, TAK ABY ODPOWIEDZI "YEP" oraz "NOPE"
+// NA PYTANIE "Do you have a bit of money to spend?" 
+// ZALACZALY ODPOWIEDNIE REGULY ("YEP"="yes", "NOPE"="no")
 rule "haveMoney?"
 when
 	UserResponse(question == Questions.NEED_MONEY, answer == "no");
 then
-	GUI gui = default_question(Questions.HAVE_MONEY);
+	GUI gui = new GUI();
+    gui.setTitle("PROSZE ODPOWIEDZIEC");		// MODYFIKACJA NAGLOWKA ZAPYTANIA
+    gui.setOptionType(JOptionPane.YES_NO_OPTION);
+    gui.setMessageType(JOptionPane.QUESTION_MESSAGE);
+   	
+   	// UZYTKOWNIK MOZE WYBRAC DOWOLNE ZAPYTANIA (ZEBY MIALY ODPOWIEDNI SKUTEK TRZEBA ZMODYFIKOWAC WARUNKI ODPOWIEDNICH REGUL) 
+    gui.setOptions(new Object[] {"NOPE", "YEP"});
+    
+    Question question = new Question();
+    question.setQuestion(Questions.HAVE_MONEY);
+    gui.setAskedQuestion(question);
     ask_question(frame, kcontext.getKieRuntime(), gui);
 end;
 
 
+// TA REGULA MODYFIKUJE DOMYSLNE ZAPYTANIE DODAJAC TRZECIA i CZWARTA OPCJE
+// SYSTEM PRZERWIE DZIALANIE PO ODPOWIEDZI "maybe no" oraz "maybe yes"
+// GDYZ ZADNA REGULA NIE ZOSTANIE ZALACZONA NA TAKA ODPOWIEDZ 
+// (ZGODNIE Z DOSTARCZONYM SCHEMATEM DECYZYJNYM)
 rule "useBrain_makeMoney?"
 when
 	UserResponse(question == Questions.NEED_MONEY, answer == "yes");
 then	
 	GUI gui = default_question(Questions.USE_BRAIN);
+	gui.setOptions(new Object[] {"no", "yes", "maybe no", "maybe yes"});
     ask_question(frame, kcontext.getKieRuntime(), gui);
 end;
 
 
+// TA REGULA MODYFIKUJE DOMYSLNE ZAPYTANIE ZMIENIAJAC "yes" na "tak" oraz "no" na "nie"
+// ZMODYFIKOWANO SCHEMAT DECYZYJNY
 rule "useBrain_haveMoney?"
 when
 	UserResponse(question == Questions.STAY_HAMILTON, answer == "yes");
 then	
 	GUI gui = default_question(Questions.USE_BRAIN);
+	gui.setOptions(new Object[] {"nie", "tak"});
     ask_question(frame, kcontext.getKieRuntime(), gui);
 end;
 
@@ -148,7 +170,7 @@ end;
 
 rule "artisticSkill?"
 when
-	UserResponse(question == Questions.HAVE_MONEY, answer == "no");
+	UserResponse(question == Questions.HAVE_MONEY, answer == "NOPE");
 then	
 	GUI gui = default_question(Questions.ARTISTIC_SKILL);
     ask_question(frame, kcontext.getKieRuntime(), gui);
@@ -157,7 +179,7 @@ end;
 
 rule "stayHamilton?"
 when
-	UserResponse(question == Questions.HAVE_MONEY, answer == "yes");
+	UserResponse(question == Questions.HAVE_MONEY, answer == "YEP");
 then	
 	GUI gui = default_question(Questions.STAY_HAMILTON);
     ask_question(frame, kcontext.getKieRuntime(), gui);
@@ -374,7 +396,7 @@ end;
 
 rule "potato"
 when
-    UserResponse(question == Questions.USE_BRAIN, answer == "no");
+    UserResponse(question == Questions.USE_BRAIN, answer == "nie");
     UserResponse(question == Questions.STAY_HAMILTON, answer == "yes");
 then
     GUI gui = default_result(Jobs.POTATO);
@@ -383,7 +405,7 @@ end;
 
 rule "student"
 when
-    UserResponse(question == Questions.USE_BRAIN, answer == "yes");
+    UserResponse(question == Questions.USE_BRAIN, answer == "tak");
     UserResponse(question == Questions.STAY_HAMILTON, answer == "yes")
 then
     GUI gui = default_result(Jobs.STUDENT);
